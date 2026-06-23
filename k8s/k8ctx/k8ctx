@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+kubectl_bin="${KUBECTL:-kubectl}"
+
+usage() {
+    cat <<'USAGE'
+Usage:
+  k8ctx              List Kubernetes contexts
+  k8ctx <context>    Switch to a Kubernetes context
+  k8ctx -h|--help    Show this help
+USAGE
+}
+
+if [ "$#" -gt 1 ]; then
+    usage >&2
+    exit 2
+fi
+
+case "${1:-}" in
+    -h|--help)
+        usage
+        exit 0
+        ;;
+    "")
+        "$kubectl_bin" config get-contexts
+        ;;
+    *)
+        "$kubectl_bin" config use-context "$1"
+        ;;
+esac
