@@ -34,10 +34,36 @@ Set the namespace for the current context:
 k8ns music
 ```
 
+## Tmux
+
+Create or attach to the default `main` session:
+
+```bash
+tm
+```
+
+Create or attach to a named session:
+
+```bash
+tm music
+```
+
+### Zsh completion
+
+The `tm` completion lists running tmux sessions. Add the completion directory to
+your zsh `fpath` before `compinit`:
+
+```zsh
+fpath=("$HOME/.local/share/zsh/site-functions" $fpath)
+autoload -Uz compinit
+compinit
+```
+
 ## Install
 
 ```bash
 ./install.sh
 ```
 
-The installer creates symlinks in `~/.local/bin`.
+The installer creates command symlinks in `~/.local/bin` and zsh completion
+symlinks in `~/.local/share/zsh/site-functions`.

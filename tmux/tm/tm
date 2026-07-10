@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+tmux_bin="${TMUX_BIN:-tmux}"
+default_session="main"
+
+usage() {
+    cat <<'USAGE'
+Usage:
+  tm             Create or attach to the main tmux session
+  tm <session>   Create or attach to a named tmux session
+  tm -h|--help   Show this help
+USAGE
+}
+
+if [ "$#" -gt 1 ]; then
+    usage >&2
+    exit 2
+fi
+
+case "${1:-}" in
+    -h|--help)
+        usage
+        exit 0
+        ;;
+esac
+
+session="${1:-$default_session}"
+if [ -z "$session" ]; then
+    usage >&2
+    exit 2
+fi
+
+if ! command -v "$tmux_bin" >/dev/null 2>&1; then
+    printf 'error: tmux not found: %s\n' "$tmux_bin" >&2
+    exit 127
+fi
+
+target="=$session"
+
+if "$tmux_bin" has-session -t "$target" 2>/dev/null; then
+    if [ -n "${TMUX:-}" ]; then
+        exec "$tmux_bin" switch-client -t "$target"
+    fi
+
+    exec "$tmux_bin" attach-session -t "$target"
+fi
+
+if [ -n "${TMUX:-}" ]; then
+    "$tmux_bin" new-session -d -s "$session"
+    exec "$tmux_bin" switch-client -t "$target"
+fi
+
+exec "$tmux_bin" new-session -s "$session"

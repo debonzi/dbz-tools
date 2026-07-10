@@ -1,0 +1,14 @@
+#compdef tm
+
+_tm_sessions() {
+    local -a sessions
+
+    sessions=("${(@f)$(${TMUX_BIN:-tmux} list-sessions -F '#S' 2>/dev/null)}")
+    if (( ${#sessions} )); then
+        compadd -- "${sessions[@]}"
+    fi
+}
+
+_arguments \
+    '(-h --help)'{-h,--help}'[show help]' \
+    '1:tmux session:_tm_sessions'

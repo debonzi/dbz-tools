@@ -3,19 +3,24 @@ set -euo pipefail
 
 repo_root="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 bin_dir="$HOME/.local/bin"
+zsh_completion_dir="$HOME/.local/share/zsh/site-functions"
 
 install_link() {
     local name="$1"
     local source="$2"
-    local target="$bin_dir/$name"
+    local target_dir="${3:-$bin_dir}"
+    local make_executable="${4:-1}"
+    local target="$target_dir/$name"
 
     if [ ! -f "$source" ]; then
         printf 'error: source not found: %s\n' "$source" >&2
         return 1
     fi
 
-    chmod +x "$source"
-    mkdir -p "$bin_dir"
+    if [ "$make_executable" = "1" ]; then
+        chmod +x "$source"
+    fi
+    mkdir -p "$target_dir"
 
     if [ -L "$target" ]; then
         local current_target
@@ -42,3 +47,5 @@ install_link() {
 
 install_link k8ctx "$repo_root/k8s/k8ctx/k8ctx"
 install_link k8ns "$repo_root/k8s/k8ns/k8ns"
+install_link tm "$repo_root/tmux/tm/tm"
+install_link _tm "$repo_root/tmux/completions/_tm" "$zsh_completion_dir" 0
